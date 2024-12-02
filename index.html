@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>어근 : 작을 소 (小) - 초등어휘 단어 게임</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #FFFAF0;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #FF69B4;
+        }
+        .hidden {
+            display: none;
+        }
+        .section {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #FFF0F5;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .button {
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 15px 5px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .button:hover {
+            background-color: #FF1493;
+        }
+        .quiz-option {
+            display: block;
+            text-align: left;
+            margin: 10px 0;
+        }
+        input[type="radio"] {
+            margin-right: 10px;
+        }
+        #score {
+            font-size: 24px;
+            color: #32CD32;
+        }
+        #incorrectAnswers {
+            text-align: left;
+            margin-top: 20px;
+        }
+        #incorrectAnswers p {
+            color: #FF4500;
+        }
+    </style>
+</head>
+<body>
+
+<h1>✨ 어근 : 작을 소 (小) - 초등어휘 단어 게임 ✨</h1>
+
+<div id="studySection" class="section">
+    <div id="studyContent">
+        <!-- Study content will be injected here -->
+    </div>
+    <button class="button" id="nextStudyBtn">다음</button>
+</div>
+
+<div id="quizSection" class="section hidden">
+    <h2>단어 퀴즈</h2>
+    <div id="quizContent">
+        <!-- Quiz content will be injected here -->
+    </div>
+    <button class="button" id="nextQuizBtn">다음</button>
+    <button class="button hidden" id="submitQuizBtn">제출</button>
+</div>
+
+<div id="scoreSection" class="section hidden">
+    <h2>🎉 점수 🎉</h2>
+    <p id="score">0 / 10</p>
+    <div id="incorrectAnswers">
+        <!-- Incorrect answers will be displayed here -->
+    </div>
+    <button class="button" onclick="location.reload()">다시 하기</button>
+</div>
+
+<script>
+// 데이터 정의
+const words = [
+    { word: "소형", definition: "작은 크기 또는 형태." },
+    { word: "소규모", definition: "작은 규모나 범위." },
+    { word: "소사", definition: "작은 일, 사소한 일." },
+    { word: "소인", definition: "사소하고 중요하지 않은 사람." },
+    { word: "소성", definition: "작은 성취나 완성." },
+    { word: "소의", definition: "작은 의미 또는 의도." },
+    { word: "소장", definition: "작은 장수 또는 소장관." },
+    { word: "소회", definition: "짧은 회상이나 생각." },
+    { word: "소중", definition: "귀하고 소중함." },
+    { word: "소강", definition: "일시적인 평온이나 중단." }
+];
+
+const sentences = {
+    "소형": [
+        "이 차는 소형으로 도시 주행에 적합하다.",
+        "소형 가전제품을 구매했다.",
+        "소형 배를 타고 호수를 여행했다."
+    ],
+    "소규모": [
+        "소규모 파티를 열었다.",
+        "소규모 사업을 시작했다.",
+        "소규모 그룹으로 활동했다."
+    ],
+    "소사": [
+        "그는 소사에 너무 신경 쓰지 않았다.",
+        "소사는 인생에서 큰 의미가 없다.",
+        "사소한 소사로 다툼이 생겼다."
+    ],
+    "소인": [
+        "그는 소인으로 여겨졌다.",
+        "소인의 방해로 일이 지연되었다.",
+        "그는 소인한 존재로만 인식되었다."
+    ],
+    "소성": [
+        "소성한 성과를 거두었다.",
+        "소성한 목표를 달성했다.",
+        "소성한 프로젝트가 성공했다."
+    ],
+    "소의": [
+        "그의 말에는 소의가 담겨 있었다.",
+        "소의한 행동을 보였다.",
+        "소의에 따라 결정했다."
+    ],
+    "소장": [
+        "그는 경찰서 소장이다.",
+        "소장은 팀을 이끌었다.",
+        "소장의 지시에 따라 움직였다."
+    ],
+    "소회": [
+        "지난 날을 소회했다.",
+        "소회하는 시간을 가졌다.",
+        "그는 소회 속에 깊이 빠졌다."
+    ],
+    "소중": [
+        "가족은 내게 소중하다.",
+        "소중한 추억을 간직했다.",
+        "소중한 친구를 만나서 기쁘다."
+    ],
+    "소강": [
+        "전쟁이 소강 상태로 접어들었다.",
+        "소강기에 휴식을 취했다.",
+        "사업이 소강 상태에 머물렀다."
+    ]
+};
+
+const quizQuestions = [
+    {
+        question: "1. 이 차는 ____으로 도시 주행에 적합하다.",
+        options: ["소강", "소형"],
+        correctAnswer: "소형"
+    },
+    {
+        question: "2. ____ 파티를 열었다.",
+        options: ["소규모", "소장"],
+        correctAnswer: "소규모"
+    },
+    {
+        question: "3. 그들은 사소한 ____로 다툼이 생겼다.",
+        options: ["소사", "소중"],
+        correctAnswer: "소사"
+    },
+    {
+        question: "4. 그는 ____으로 여겨졌다.",
+        options: ["소인", "소강"],
+        correctAnswer: "소인"
+    },
+    {
+        question: "5. 소성한 ____을 거두었다.",
+        options: ["성과", "소성"],
+        correctAnswer: "소성"
+    },
+    {
+        question: "6. 그의 말에는 ____가 담겨 있었다.",
+        options: ["소의", "소장"],
+        correctAnswer: "소의"
+    },
+    {
+        question: "7. 그는 경찰서 ____이다.",
+        options: ["소장", "소중"],
+        correctAnswer: "소장"
+    },
+    {
+        question: "8. 지난 날을 ____했다.",
+        options: ["소회", "소강"],
+        correctAnswer: "소회"
+    },
+    {
+        question: "9. 가족은 내게 ____하다.",
+        options: ["소중", "소성"],
+        correctAnswer: "소중"
+    },
+    {
+        question: "10. 전쟁이 ____ 상태로 접어들었다.",
+        options: ["소강", "소인"],
+        correctAnswer: "소강"
+    }
+];
+
+// 상태 변수
+let currentWordIndex = 0;
+let currentQuizIndex = 0;
+let score = 0;
+let incorrectAnswers = [];
+
+// 초기화 함수
+function showDefinition() {
+    if (currentWordIndex < words.length) {
+        const word = words[currentWordIndex];
+        document.getElementById('studyContent').innerHTML = `
+            <h2>단어 뜻 배우기 (어근: 작을 소)</h2>
+            <h3>${word.word}</h3>
+            <p>${word.definition}</p>
+        `;
+    } else {
+        // 모든 단어 학습이 끝나면 퀴즈 시작
+        document.getElementById('studySection').classList.add('hidden');
+        initQuiz();
+        document.getElementById('quizSection').classList.remove('hidden');
+    }
+}
+
+function showSentences() {
+    const word = words[currentWordIndex];
+    const sentenceList = sentences[word.word];
+    let sentencesHTML = `<h2>예문 배우기 (어근: 작을 소)</h2><h3>${word.word}</h3>`;
+    sentenceList.forEach(sentence => {
+        sentencesHTML += `<p>• ${sentence}</p>`;
+    });
+    document.getElementById('studyContent').innerHTML = sentencesHTML;
+}
+
+// 버튼 이벤트 리스너
+document.getElementById('nextStudyBtn').addEventListener('click', () => {
+    if (document.getElementById('studyContent').innerHTML.includes('단어 뜻 배우기')) {
+        showSentences();
+    } else {
+        currentWordIndex++;
+        showDefinition();
+    }
+});
+
+// 퀴즈 함수
+function initQuiz() {
+    if (currentQuizIndex < quizQuestions.length) {
+        const q = quizQuestions[currentQuizIndex];
+        document.getElementById('quizContent').innerHTML = `
+            <p>${q.question}</p>
+            ${shuffleOptions(q.options, q.correctAnswer).map((option, index) => `
+                <label class="quiz-option">
+                    <input type="radio" name="quiz${currentQuizIndex}" value="${option}">
+                    ${option}
+                </label>
+            `).join('')}
+        `;
+        // Toggle buttons
+        if (currentQuizIndex === quizQuestions.length - 1) {
+            document.getElementById('nextQuizBtn').classList.add('hidden');
+            document.getElementById('submitQuizBtn').classList.remove('hidden');
+        } else {
+            document.getElementById('nextQuizBtn').classList.remove('hidden');
+        }
+    }
+}
+
+// 옵션 섞기 함수
+function shuffleOptions(options, correctAnswer) {
+    let shuffled = options.slice(); // 복사본 생성
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+}
+
+document.getElementById('nextQuizBtn').addEventListener('click', () => {
+    const q = quizQuestions[currentQuizIndex];
+    const selected = document.querySelector(`input[name="quiz${currentQuizIndex}"]:checked`);
+    if (selected) {
+        if (selected.value === q.correctAnswer) {
+            score++;
+        } else {
+            incorrectAnswers.push({
+                question: q.question,
+                yourAnswer: selected.value,
+                correctAnswer: q.correctAnswer
+            });
+        }
+        currentQuizIndex++;
+        initQuiz();
+    } else {
+        alert("답을 선택해주세요!");
+    }
+});
+
+document.getElementById('submitQuizBtn').addEventListener('click', () => {
+    const q = quizQuestions[currentQuizIndex];
+    const selected = document.querySelector(`input[name="quiz${currentQuizIndex}"]:checked`);
+    if (selected) {
+        if (selected.value === q.correctAnswer) {
+            score++;
+        } else {
+            incorrectAnswers.push({
+                question: q.question,
+                yourAnswer: selected.value,
+                correctAnswer: q.correctAnswer
+            });
+        }
+        currentQuizIndex++;
+        showScore();
+    } else {
+        alert("답을 선택해주세요!");
+    }
+});
+
+function showScore() {
+    document.getElementById('quizSection').classList.add('hidden');
+    document.getElementById('score').innerText = `${score} / ${quizQuestions.length}`;
+    if (incorrectAnswers.length > 0) {
+        let incorrectHTML = "<h3>틀린 문제</h3>";
+        incorrectAnswers.forEach(item => {
+            incorrectHTML += `
+                <p><strong>문제:</strong> ${item.question}</p>
+                <p><strong>당신의 답:</strong> ${item.yourAnswer}</p>
+                <p><strong>정답:</strong> ${item.correctAnswer}</p>
+                <hr>
+            `;
+        });
+        document.getElementById('incorrectAnswers').innerHTML = incorrectHTML;
+    } else {
+        document.getElementById('incorrectAnswers').innerHTML = "<p>모든 문제를 맞추셨습니다! 훌륭해요! 🎉</p>";
+    }
+    document.getElementById('scoreSection').classList.remove('hidden');
+}
+
+// 초기화 시작
+showDefinition();
+</script>
+
+</body>
+</html>
